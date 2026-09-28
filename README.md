@@ -70,7 +70,7 @@ agent reads and edits files and runs commands when you start a conversation:
 | File reads, edits, and commands | The connected client runs them on your machine as your user. | They run in the workspace's configured sandbox. |
 | Working files | Your current directory when you start `ufo`. | The sandbox's `/workspace`, separate from your current directory. |
 | Client connection | Keep `ufo` running until the turn ends; those steps need that connection. | The turn can continue after `ufo` exits. Use `--wait SECONDS` to leave early and `--resume ID` to read the rest. |
-| Execution boundary | Your machine and your user account. | The configured sandbox carrier: `local` on the server by default, or a carrier such as Docker or E2B. |
+| Execution boundary | Your machine and your user account. | The configured sandbox carrier: `local` on the server by default, or a carrier such as Docker, E2B, or Freestyle. |
 
 A resumed conversation keeps the execution location it already has. See `client/README.md` for
 client options.
@@ -155,7 +155,7 @@ modes. See the [terminal guide](https://ufo.ai/docs/work/terminal/) for more det
 | Agent access | A member's account reaches an agent only through a connector grant made in chat; the granting turn is the audit record. The workspace's own keyed accounts reach only the main agent until a member grants them to another. |
 | Workspace scope | Every request, turn, and job binds one workspace, and every query filters on it. |
 | Keys | The Rust services under `servers/` hold no customer keys; every secret stays in the runtime. |
-| Sandbox | The default `local` carrier confines writes with Seatbelt or Landlock, but can read the whole host, and the kernel does not enforce its egress. For untrusted input or several workspaces, use `docker` or `e2b`. |
+| Sandbox | The default `local` carrier confines writes with Seatbelt or Landlock, but can read the whole host, and the kernel does not enforce its egress. For untrusted input or several workspaces, use `docker`, `e2b`, or `freestyle`. |
 
 ## Extend it
 

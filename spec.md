@@ -473,6 +473,17 @@ state commits on the failure path too.
 
 ## Sandboxing
 
+The `freestyle` extension provisions a persistent VM from `[sandbox] image_ref`, a prepared
+immutable Freestyle snapshot id. A conversation's deterministic slug recovers creates interrupted
+before its handle was stored; a stored handle is resumed or reported missing, never replaced.
+Freestyle's host firewall admits only the public HTTPS egress proxy's resolved addresses and port.
+Each open refreshes that rule set, the pinned hostname mapping, and the proxy CA. Commands and file
+transfers run as the unprivileged sandbox user through SSH; only runtime skill installation and CA
+setup use root. Each connection uses a VM- and user-scoped identity revoked after authentication.
+Preview ports travel through host-loopback SSH forwards, so they have no public guest endpoint.
+The carrier pauses idle VMs without reclaiming their workspace; retention is subject to the
+account's Freestyle plan. Snapshot creation and branching are operator actions.
+
 Every turn executes tools in a sandbox: Docker container from a pinned image (baked toolchain),
 default-deny network egress with exactly one route out — the sandbox proxy. A sandbox belongs to a
 conversation, and a subagent turn executes in the sandbox of the turn that spawned it — one
@@ -631,7 +642,7 @@ Manifest registers (each optional):
 | `deploy_routes` | Endpoints a deploy's own service calls, mounted at `/internal/<name>/<path>` behind a constant-time bearer check against `deploy_bearer_env`, which must be one of `deploy_keys`; `serve` fails boot when it is unset. The handler gets a `DeployContext`: `provision` (the founding seat), `bound(workspace_id)` (transaction, profiles, member model key, store), and cross-workspace reads through the owner pool — `memberships`, `workspaces_by_first_domain`, `first_member_emails`, `workspace_count`, `workspace_ids`, `seated_members`, `owner_transaction` — each taking a required `audit` that logs `deploy.cross_workspace_read` with the route and extension — plus `flag_backend` and `flag_keys` (core's and the pack's), so a flag-service write refuses a deploy it does not serve and a key no code reads. First-party distributions only. |
 | `commands` | Operator verbs, `ufoctl <name> <command> --<field> <value>`: each field of the params model is one option, the command runs with a `DeployContext` and prints the line it returns; `CommandRefused` exits 1 with its message. A name that is one of `ufoctl`'s own verbs fails. First-party distributions only. |
 | `models` | Model providers behind `ModelClient` (OpenRouter, local runtimes). |
-| `carriers` | Sandbox carriers — Docker, E2B, remote runners; core's defaults are a local temp-dir carrier and the `client` carrier (a connected CLI terminal's own directory). |
+| `carriers` | Sandbox carriers — Docker, E2B, Freestyle, remote runners; core's defaults are a local temp-dir carrier and the `client` carrier (a connected CLI terminal's own directory). |
 | `indexes` | Index backends for memory/source retrieval; the dialect-native default (SQLite FTS5 + local cosine, Postgres tsvector + pgvector) ships as the base-pinned `index_default` extension registering name `"default"`, which core resolves when `memory.index_backend` is unset. |
 | `embeds` | Embedding backends behind `EmbedClient`, selected by `memory.embed_backend`; OpenAI text-embedding-3-large ships as the base-pinned `embed_openai` extension registering name `"default"`. |
 | `hubs` | Stream hubs for multi-instance deploys (Redis). |
@@ -1368,7 +1379,7 @@ bundle installs OSS, on-prem, or hosted.
 | OpenRouter (any model router) | models, deploy_keys |
 | Brief pipeline (typed outline → draft → critic stages the agent chains) | subagents, skills |
 | Composio / Pipedream connector brokers | connectors, routes (OAuth), deploy_keys |
-| Docker, E2B | carriers |
+| Docker, E2B, Freestyle | carriers |
 | Redis stream hub | hubs |
 | Open feature-flag backend | flag_providers |
 | GitHub / Asana / Google Ads feed-sync sources | sources, credentials, auth_proxies (`direct`), deploy_keys |

@@ -43,6 +43,7 @@ EXTENSIONS = (
     "index_default",
     "embed_openai",
     "flags_open",
+    "freestyle",
     "openrouter",
     "ufo",
     "debugger",
